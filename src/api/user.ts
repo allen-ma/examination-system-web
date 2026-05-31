@@ -2,21 +2,21 @@ import request from './request'
 import type { User, UserQuery, UserDTO, Result, PageResult } from '@/types'
 
 export function getUserList(params: UserQuery) {
-  return request.get<Result<PageResult<User>>>('/users', { params })
+  return request.get<Result<PageResult<User>>>('/v1/users', { params })
 }
 
 export function getUserById(id: number) {
-  return request.get<Result<User>>(`/users/${id}`)
+  return request.get<Result<User>>(`/v1/users/${id}`)
 }
 
 export function createUser(data: UserDTO) {
-  return request.post<Result<void>>('/users', data)
+  return request.post<Result<void>>('/v1/users', data)
 }
 
 export function updateUser(id: number, data: UserDTO) {
-  return request.put<Result<void>>(`/users/${id}`, data)
+  return request.put<Result<void>>(`/v1/users/${id}`, data)
 }
 
 export function deleteUser(id: number) {
-  return request.delete<Result<void>>(`/users/${id}`)
+  return request.delete<Result<void>>(`/v1/users/${id}`)
 }

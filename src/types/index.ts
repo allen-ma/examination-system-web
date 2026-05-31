@@ -17,6 +17,7 @@ export interface UserQuery {
 
 export interface UserDTO {
   username: string
+  password?: string
   realName: string
   role?: string
   email: string
@@ -94,4 +95,31 @@ export interface AnswerDetail {
 export interface AnswerItem {
   questionId: number
   studentAnswer: string
+}
+
+export interface QuestionQuery {
+  type?: string
+  difficulty?: number
+  page: number
+  pageSize: number
+}
+
+export interface Question {
+  id: number
+  type: string
+  content: string
+  options: string
+  answer: string
+  difficulty: number
+  score: number
+  teacherId: number
+  teacherName?: string
+  createTime: string
+}
+
+export interface StatsOverview {
+  userCount: number
+  examCount: number
+  paperCount: number
+  questionCount: number
 }

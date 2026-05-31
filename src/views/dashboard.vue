@@ -21,27 +21,21 @@
 
   <div class="dashboard" v-else>
     <h2 class="welcome">欢迎使用考试管理系统</h2>
-    <el-row :gutter="20" style="margin-top: 24px">
-      <el-col :span="6">
-        <el-card shadow="hover">
+    <el-row v-loading="loading" :gutter="20" style="margin-top: 24px">
+      <el-col v-if="isAdmin" :span="8">
+        <el-card shadow="hover" class="clickable-card" @click="router.push('/users')">
           <template #header>用户总数</template>
           <div class="stat-value">{{ stats.userCount }}</div>
         </el-card>
       </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover">
-          <template #header>考试总数</template>
-          <div class="stat-value">{{ stats.examCount }}</div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover">
+      <el-col :span="8">
+        <el-card shadow="hover" class="clickable-card" @click="router.push('/exam-manage?status=published')">
           <template #header>试卷总数</template>
           <div class="stat-value">{{ stats.paperCount }}</div>
         </el-card>
       </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover">
+      <el-col :span="8">
+        <el-card shadow="hover" class="clickable-card" @click="router.push('/question-manage')">
           <template #header>题目总数</template>
           <div class="stat-value">{{ stats.questionCount }}</div>
         </el-card>
@@ -51,13 +45,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { getStatsOverview } from '@/api/stats'
 
 const router = useRouter()
 const userStore = useUserStore()
 const isStudent = computed(() => userStore.userInfo?.role === 'student')
+const isAdmin = computed(() => userStore.userInfo?.role === 'admin')
+const loading = ref(false)
 
 const stats = reactive({
   userCount: 0,
@@ -65,6 +62,21 @@ const stats = reactive({
   paperCount: 0,
   questionCount: 0,
 })
+
+async function fetchStats() {
+  if (isStudent.value) return
+  loading.value = true
+  try {
+    const { data } = await getStatsOverview()
+    Object.assign(stats, data.data)
+  } catch {
+    // error handled by interceptor
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchStats)
 </script>
 
 <style scoped lang="scss">
@@ -82,6 +94,16 @@ const stats = reactive({
     color: #409eff;
     text-align: center;
     padding: 10px 0;
+  }
+
+  .clickable-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
   }
 
   .action-card {

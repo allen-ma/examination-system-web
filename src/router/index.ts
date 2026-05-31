@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -51,6 +52,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/exam-history.vue'),
         meta: { title: '考试记录', roles: ['student'] },
       },
+      // Admin/Teacher manage routes
+      {
+        path: 'exam-manage',
+        name: 'ExamManage',
+        component: () => import('@/views/exam-manage.vue'),
+        meta: { title: '考试管理', roles: ['admin', 'teacher'] },
+      },
+      {
+        path: 'question-manage',
+        name: 'QuestionManage',
+        component: () => import('@/views/question-manage.vue'),
+        meta: { title: '题目管理', roles: ['admin', 'teacher'] },
+      },
     ],
   },
 ]
@@ -64,9 +78,22 @@ router.beforeEach((to, _from, next) => {
   const token = localStorage.getItem('token')
   if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
     next('/login')
-  } else {
-    next()
+    return
   }
+
+  // 角色校验：如果路由定义了 meta.roles，检查当前用户角色是否匹配
+  const roles = to.meta.roles as string[] | undefined
+  if (roles && roles.length > 0) {
+    const raw = localStorage.getItem('userInfo')
+    const userInfo = raw ? JSON.parse(raw) : null
+    if (!userInfo || !roles.includes(userInfo.role)) {
+      ElMessage.error('权限不足')
+      next('/dashboard')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router
