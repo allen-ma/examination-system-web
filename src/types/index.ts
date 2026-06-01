@@ -111,10 +111,17 @@ export interface Question {
   options: string
   answer: string
   difficulty: number
-  score: number
-  teacherId: number
+  createBy: number
   teacherName?: string
   createTime: string
+}
+
+export interface QuestionDTO {
+  type: string
+  content: string
+  options?: string
+  answer: string
+  difficulty: number
 }
 
 export interface StatsOverview {
@@ -122,4 +129,22 @@ export interface StatsOverview {
   examCount: number
   paperCount: number
   questionCount: number
+}
+
+// ---- Exam management ----
+
+export interface ExamQuery {
+  title?: string
+  status?: string
+  page: number
+  pageSize: number
+}
+
+export interface ExamDTO {
+  title: string
+  description: string
+  startTime: string
+  endTime: string
+  durationMinutes: number
+  totalScore: number
 }
